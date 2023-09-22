@@ -21,7 +21,7 @@ ENV PYTHONPATH=/app/pypy
 COPY . /app
 
 # Compile the interpreter
-RUN pypy pypy/rpython/bin/rpython --output rinha --verbose -O2 src/python/target.py
+RUN make rinha
 
 # Copy Rinha source
 COPY src/rinha /var/rinha
