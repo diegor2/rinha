@@ -15,15 +15,16 @@ WORKDIR /app
 # rpython toolchain
 ADD https://downloads.python.org/pypy/pypy3.10-v7.3.12-src.tar.bz2 .
 RUN mkdir pypy && tar -xvf pypy3.10-v7.3.12-src.tar.bz2 -C pypy --strip-components=1 && rm -f pypy3.10-v7.3.12-src.tar.bz2
+ENV PYTHONPATH=/app/pypy
 
 # Interpreter source
 COPY . /app
 
 # Compile the interpreter
-RUN pypy pypy/rpython/bin/rpython -O2 src/python/targetnopstandalone.py
+RUN pypy pypy/rpython/bin/rpython --output rinha --verbose -O2 src/python/target.py
 
 # Copy Rinha source
 COPY src/rinha /var/rinha
 
 # Interpret rinha code
-ENTRYPOINT ["./targetnopstandalone-c", "/var/rinha/fib.rinha"]
+ENTRYPOINT ["./rinha", "/var/rinha/fib.rinha"]
