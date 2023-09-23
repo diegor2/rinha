@@ -16,16 +16,7 @@ publish: image
 	docker push diegor2/rinha:latest
 
 toolchain:
-	PYPY_TARBALL := pypy2.7-v7.3.12-src.tar.bz2
-	wget https://downloads.python.org/pypy/${PYPY_TARBALL} .
-	ifneq ("$(wildcard $(PATH_TO_FILE))","")
-		@echo "Already downloaded. Remove pypy directory before getting it again."
-	else
-		mkdir pypy
-		tar -xvf ${PYPY_TARBALL} -C pypy --strip-components=1
-		rm -f ${PYPY_TARBALL}
-		export PYTHONPATH=/app/pypy
-	endif
+	./get-toolchain.sh
 
 freeze:
 	pip freeze > requirements.txt
@@ -33,7 +24,7 @@ freeze:
 reqs:
 	pip install -r requirements.txt
 
-rinha:
+rinha: toolchain reqs
 	python pypy/rpython/bin/rpython --output bin/rinha --verbose -O2 src/python/target.py
 
 test:
