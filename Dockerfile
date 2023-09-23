@@ -28,4 +28,4 @@ RUN make rinha
 COPY src/rinha /var/rinha
 
 # Interpret rinha code
-ENTRYPOINT ["./rinha", "/var/rinha/fib.rinha"]
+ENTRYPOINT ["./rinha", "/var/rinha/print.rinha"]
