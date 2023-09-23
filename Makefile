@@ -6,7 +6,7 @@ clean:
 	find -name '__pycache__' -exec rm -rf {} +
 	find -name '.pytest_cache' -exec rm -rf {} +
 
-image: clean freeze
+image: clean
 	docker build -t diegor2/rinha .
 
 container: image
