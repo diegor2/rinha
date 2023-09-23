@@ -1,10 +1,7 @@
-
-from rinha.lexer import makeLexer
-
-lexer = makeLexer()
+from rinha.lexical import lexer
+from rinha.parsing import parser
 
 def interpret(source):
     stream = lexer.lex(source)
-    for token in stream:
-        print(token)
-    
+    file = parser.parse(stream)
+    file.eval()
