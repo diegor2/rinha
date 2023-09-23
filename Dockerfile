@@ -13,8 +13,9 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 
 # rpython toolchain
-ADD https://downloads.python.org/pypy/pypy3.10-v7.3.12-src.tar.bz2 .
-RUN mkdir pypy && tar -xvf pypy3.10-v7.3.12-src.tar.bz2 -C pypy --strip-components=1 && rm -f pypy3.10-v7.3.12-src.tar.bz2
+ENV PYPY_TARBALL=pypy2.7-v7.3.12-src.tar.bz2
+ADD https://downloads.python.org/pypy/$PYPY_TARBALL .
+RUN mkdir pypy && tar -xvf $PYPY_TARBALL -C pypy --strip-components=1 && rm -f $PYPY_TARBALL
 ENV PYTHONPATH=/app/pypy
 
 # Interpreter source

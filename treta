@@ -1,3 +1,2 @@
 #!/usr/bin/env sh
-
-python src/python/target.py "$@"
+PYTHONPATH=pypy python src/python/target.py "$@"
