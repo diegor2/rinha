@@ -39,7 +39,7 @@ class Call(Term):
     def eval():
         pass
 
-### Intrinsic functions
+## Intrinsic functions
 
 class Print(Term):
     def __init__(self, expr):
@@ -50,7 +50,7 @@ class Print(Term):
         print(value)
         return value
     
-### Binary
+### Binary operations
 
 class Binary(Token):
     def __init__(self, left, right):

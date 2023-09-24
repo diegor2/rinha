@@ -8,7 +8,7 @@
 
 ### Mas isso não é um compilador!
 
-A rinha também aceita interpretadores. O objetivo inicial era fazer um interpretador com compilador JIT.
+A rinha também aceita interpretadores. Meu objetivo inicial neste projeto era fazer um interpretador com compilador JIT para rinha.
 
 ### O que é RPython?
 

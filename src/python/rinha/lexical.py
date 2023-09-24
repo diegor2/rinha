@@ -5,21 +5,62 @@ __ignore = [
     r'\s+',                     # empty space
     r'[\n\r]+',                 # line break
     r'//.*[\n\r]+',             # single-line // comments
-    r'"',                       # quotes 
 ]
 
 __ignore_with_params = [
     (r'/\*.*\*/', re.DOTALL)    # multiline /* comments */
 ]
 
-__lexicon_rules = {    
-    'PRINT'             : r'print',
-    'STRING'            : r'(?<=").+(?=")',
-    'OPEN_PARENS'   : r'\(',
-    'CLOSE_PARENS'  : r'\)',
-}
+__lexicon_keywords = [
+    ('EXTERNAL'          , 'external'),
+    ('TRUE'              , 'true'),
+    ('FALSE'             , 'false'),
+    ('PRINT'             , 'print'),
+    ('FIRST'             , 'first'),
+    ('SECOND'            , 'second'),
+    ('LET'               , 'let'),
+    ('IF'                , 'if'),
+    ('ELSE'              , 'else'),
+    ('FN'                , 'fn'),
+]
 
-lexicon = __lexicon_rules.keys()
+__lexicon_operators = [
+    ('AND'              , '&&'),
+    ('OR'               , '||'),
+    ('EQ'               , '=='),
+    ('NEQ'              , '!='),
+    ('LTEQ'             , '<='),
+    ('GTEQ'             , '>='),
+    ('LT'               , '<'),
+    ('GT'               , '>'),
+    ('FN_ARROW'         , '=>'),
+    ('OPEN_PARENS'      , '('),
+    ('CLOSE_PARENS'     , ')'),
+    ('OPEN_BRACES'      , '{'),
+    ('CLOSE_BRACES'     , '}'),
+    ('PLUS'             , '+'),
+    ('MINUS'            , '-'),
+    ('STAR'             , '*'),
+    ('SLASH'            , '/'),
+    ('PERCENT'          , '%'),
+    ('COMMA'            , ','),
+    ('SEMI_COLON'       , ';'),
+    ('ASSIGN'           , '='),
+]
+
+__lexicon_regex = [
+    ("STRING",           r'"(\\\\|\\"|\\\w|[^"\\\n])*"'),
+    ('INT'              , r'\d+'),
+    ('IDENTIFIER'       , r'[\w_$][\w\d_$]*'),
+]
+
+__lexicon_operators = (
+    __lexicon_keywords + 
+    __lexicon_operators + 
+    __lexicon_regex
+)
+
+lexicon = [k for (k, v) in __lexicon_operators]
 
 lg = LexerGenerator()
 
@@ -29,7 +70,13 @@ for regex in __ignore:
 for regex, params in __ignore_with_params:
     lg.ignore(regex, params)
 
-for token, regex in __lexicon_rules.items():
-    lg.add(token, regex) 
+for token, constant in __lexicon_keywords:
+    lg.add(token, re.escape(constant))
+
+for token, constant in __lexicon_operators:
+    lg.add(token, re.escape(constant))
+
+for token, regex in __lexicon_regex:
+    lg.add(token, regex)
 
 lexer = lg.build()
