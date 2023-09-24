@@ -3,5 +3,5 @@ from rinha.parsing import parser
 
 def interpret(source):
     stream = lexer.lex(source)
-    file = parser.parse(stream)
-    file.eval()
+    ast = parser.parse(stream)
+    ast.eval()

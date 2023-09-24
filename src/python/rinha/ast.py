@@ -2,55 +2,81 @@ from math import fmod
 from rply.token import BaseBox
 from rply.token import Token
 
+### Term ABC
+class Term(BaseBox):
+    def eval(self):
+        raise NotImplementedError
+
+    def to_string(self):
+        raise NotImplementedError
+
+    def to_debug_string(self):
+        raise NotImplementedError
+
 ## Literal values
-class Int(BaseBox):
+class Int(Term):
     def __init__(self, value):
         self.value = value
 
     def eval(self):
         return self
 
-    def __str__(self):
-        return str(self.value)
+    def to_string(self):
+        return "%d" % self.value
+    
+    def to_debug_string(self):
+        return 'rinha.ast.Int(%s)'% str(self)
 
-class Str(BaseBox):
+class Str(Term):
     def __init__(self, value):
         self.value = value
 
     def eval(self):
         return self
 
-    def __str__(self):
-        return str(self.value)
+    def to_string(self):
+        return self.value
 
-class Bool(BaseBox):
+    def to_debug_string(self):
+        return 'rinha.ast.Str(%s)'% self.value
+    
+class Bool(Term):
     def __init__(self, value):
         self.value = value
 
     def eval(self):
         return self
 
-    def __str__(self):
-        return str(self.value)
+    def to_string(self):
+        return 'true' if self.value else 'false'
 
-class Tuple(BaseBox):
+    def to_debug_string(self):
+        return 'rinha.ast.Bool(%s)'% str(self)
+    
+class Tuple(Term):
     def __init__(self, value):
         self.value = value
 
     def eval(self):
         return self
 
-    def __str__(self):
-        return str(self.value)
+    def to_string(self):
+        return '(%s, %s)' % (
+            self.value[0].eval(), 
+            self.value[1].eval()
+        )
 
+    def to_debug_string(self):
+        return 'rinha.ast.Tuple(%s)'% str(self)
+    
 # User defined functions
 
-class Function(BaseBox):
+class Function(Term):
     def __init__(self, params, expr):
         self.params = params
         self.expr = expr
 
-    def __str__(self):
+    def to_string(self):
         return "fn ({}) => {}".format(_join(self.params), self.expr)
 
     def eval(self):
@@ -59,12 +85,12 @@ class Function(BaseBox):
     def invoke(self, args):
         pass
 
-class Call(BaseBox):
+class Call(Term):
     def __init__(self, callee, args):
         self.callee = callee
         self.args = args
 
-    def __str__(self):
+    def to_string(self):
         return "Call {} with args: {}".format(self.callee, _join(self.args))
 
     def eval(self):
@@ -72,23 +98,23 @@ class Call(BaseBox):
 
 ## Intrinsic functions
 
-class Print(BaseBox):
+class Print(Term):
     def __init__(self, expr):
         self.expr = expr
 
     def eval(self):
         box = self.expr.eval()
-        print(str(box))
-        return box
+        print(box.to_string())
+        return Int(0)
 
-class First(BaseBox):
+class First(Term):
     def __init__(self, tuple):
         self.tuple = tuple
 
     def eval(self):
         return tuple[0]
 
-class Second(BaseBox):
+class Second(Term):
     def __init__(self, tuple):
         self.tuple = tuple
 
@@ -97,7 +123,7 @@ class Second(BaseBox):
 
 ### Binary operators
 
-class Binary(BaseBox):
+class Binary(Term):
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -156,24 +182,24 @@ class Or(Binary):
 
 ### Flow control
 
-class Let(BaseBox):
+class Let(Term):
     def __init__(self, expr, args):
         self.callee = callee
         self.args = args
 
-    def __str__(self):
+    def to_string(self):
         pass
 
     def eval():
         pass
 
-class If(BaseBox):
+class If(Term):
     def __init__(self, condition, then, otherwise):
         self.condition = condition
         self.then = then
         self.otherwise = otherwise
 
-    def __str__(self):
+    def to_string(self):
         pass
 
     def eval():
