@@ -29,6 +29,3 @@ rinha: toolchain reqs
 
 test:
 	pytest -sxW ignore src/python/
-
-docker-test: image
-	docker run --rm diegor2/rinha pytest src/python/

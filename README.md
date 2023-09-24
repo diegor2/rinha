@@ -45,24 +45,18 @@ make image
 make container
 ```
 
-### Para rodar os testes unitarios no docker
-
-```sh
-make docker-test
-```
-
-### Para rodar os testes no cpython ou pypy 2.7 sem compilar e sem container
+### Para rodar os testes no python do host
 
 ```sh
 make test
 ```
 
-### Para rodar o interpretador no cpython ou pypy 2.7 sem compilar
+### Para rodar o interpretador no host
 ```sh
 ./treta <arquivo.rinha>
 ```
 
-### Para compilar o interpretador sem container
+### Para compilar o interpretador no host
 
 ```sh
 make rinha
@@ -73,3 +67,5 @@ make rinha
 ```sh
 ./rinha <arquivo.rinha>
 ```
+
+Todos os comandos no host exigem um ambiente com Python 2.7
