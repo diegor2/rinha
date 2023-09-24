@@ -19,25 +19,25 @@ class Str(Term):
     def eval(self):
         return self.value
 
-# class Int(Term):
-#     def __init__(self, value):
-#         self.value = value
+class Int(Term):
+    def __init__(self, value):
+        self.value = value
 
-#     def __str__(self):
-#         "%d" % self.value
+    def __str__(self):
+        "%d" % self.value
 
-## User defined functions
+# User defined functions
 
-# class Call(Term):
-#     def __init__(self, callee, args):
-#         self.callee = callee
-#         self.args = args
+class Call(Term):
+    def __init__(self, callee, args):
+        self.callee = callee
+        self.args = args
 
-#     def __str__(self):
-#         pass
+    def __str__(self):
+        pass
     
-#     def eval():
-#         pass
+    def eval():
+        pass
 
 ### Intrinsic functions
 
@@ -52,24 +52,24 @@ class Print(Term):
     
 ### Binary
 
-# class Binary(Token):
-#     def __init__(self, left, right):
-#         self.left = left
-#         self.right = right
+class Binary(Token):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
 
-# class Add(Binary):
-#     def eval(self):
-#         return self.left.eval() + self.right.eval()
+class Add(Binary):
+    def eval(self):
+        return self.left.eval() + self.right.eval()
 
-# class Sub(Binary):
-#     def eval(self):
-#         return self.left.eval() - self.right.eval()
+class Sub(Binary):
+    def eval(self):
+        return self.left.eval() - self.right.eval()
 
-# class Mul(Binary):
-#     def eval(self):
-#         return self.left.eval() * self.right.eval()
+class Mul(Binary):
+    def eval(self):
+        return self.left.eval() * self.right.eval()
 
-# class Div(Binary):
-#     def eval(self):
-#         return self.left.eval() / self.right.eval()
+class Div(Binary):
+    def eval(self):
+        return self.left.eval() / self.right.eval()
     
