@@ -2,10 +2,25 @@ from math import fmod
 from rply.token import BaseBox
 from rply.token import Token
 
-### Term ABC
+""" 
+Term ABC
+
+This base class allows polymorphic nodes
+without breaking RPython static typing.
+
+It also`deal with RPython not complying
+with str() and repr() builtin protocols.
+
+"""
 class Term(BaseBox):
     def eval(self):
         raise NotImplementedError
+
+    def __str__(self):
+        return self.to_string()
+    
+    def __repr__(self):
+        return self.to_debug_string()
 
     def to_string(self):
         raise NotImplementedError
@@ -103,9 +118,9 @@ class Print(Term):
         self.expr = expr
 
     def eval(self):
-        box = self.expr.eval()
-        print(box.to_string())
-        return Int(0)
+        term = self.expr.eval()
+        print(term.to_string())
+        return term
 
 class First(Term):
     def __init__(self, tuple):
