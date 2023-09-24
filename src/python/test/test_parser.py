@@ -9,7 +9,8 @@ def test_string():
     result = expr.eval()
     
     assert isinstance(expr, ast.Str)
-    assert result == 'Lorem ipsum'
+    assert isinstance(result, ast.Str)
+    assert result.value == 'Lorem ipsum'
 
 
 def test_print_string(capfd):
@@ -21,12 +22,13 @@ def test_print_string(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
-    out, err = capfd.readouterr()
-
     assert isinstance(expr, ast.Print)
-    assert isinstance(expr.expr, ast.Str)
-    assert result == 'Lorem ipsum'
+
+    result = expr.eval()
+    assert isinstance(result, ast.Str)
+    assert result.value == 'Lorem ipsum'
+
+    out, err = capfd.readouterr()
     assert out == 'Lorem ipsum\n'
     assert err == ''
 
@@ -45,6 +47,6 @@ def test_print_number(capfd):
 
     assert isinstance(expr, ast.Print)
     assert isinstance(expr.expr, ast.Int)
-    assert result == 123
+    assert result.value == 123
     assert out == '123\n'
     assert err == ''

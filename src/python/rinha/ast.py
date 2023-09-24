@@ -11,7 +11,7 @@ class Int(BaseBox):
         return self
 
     def __str__(self):
-        str(self.value)
+        return str(self.value)
 
 class Str(BaseBox):
     def __init__(self, value):
@@ -21,7 +21,7 @@ class Str(BaseBox):
         return self
 
     def __str__(self):
-        str(self.value)
+        return str(self.value)
 
 class Bool(BaseBox):
     def __init__(self, value):
@@ -31,7 +31,7 @@ class Bool(BaseBox):
         return self
 
     def __str__(self):
-        str(self.value)
+        return str(self.value)
 
 class Tuple(BaseBox):
     def __init__(self, value):
@@ -41,7 +41,7 @@ class Tuple(BaseBox):
         return self
 
     def __str__(self):
-        str(self.value)
+        return str(self.value)
 
 # User defined functions
 
@@ -77,9 +77,9 @@ class Print(BaseBox):
         self.expr = expr
 
     def eval(self):
-        value = self.expr.eval()
-        print(value)
-        return value
+        box = self.expr.eval()
+        print(str(box))
+        return box
 
 class First(BaseBox):
     def __init__(self, tuple):
