@@ -8,14 +8,14 @@ pg = ParserGenerator(
 )
   
 @pg.production('term : STRING')
-def term_number(tokens):
+def term_string(tokens):
     string, = tokens
     return ast.Str(string.getstr())
 
 @pg.production('term : DIGITS')
 def term_number(tokens):
-    string, = tokens
-    return ast.Int(int(string.getstr()))
+    digits, = tokens
+    return ast.Int(int(digits.getstr()))
 
 @pg.production('term : PRINT OPEN_PARENS term CLOSE_PARENS')
 def print_term(tokens):

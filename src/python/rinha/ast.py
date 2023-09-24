@@ -2,57 +2,50 @@ from math import fmod
 from rply.token import BaseBox
 from rply.token import Token
 
-### ABC
-
-class Term(BaseBox):
-    def eval(self):
-        raise NotImplementedError
-
 ## Literal values
-
-class Int(Term):
+class Int(BaseBox):
     def __init__(self, value):
         self.value = value
+
+    def eval(self):
+        return self
 
     def __str__(self):
         str(self.value)
 
-    def eval(self):
-        return self.value
-
-class Str(Term):
+class Str(BaseBox):
     def __init__(self, value):
         self.value = value
 
-    def __str__(self):
-        return self.value
-
     def eval(self):
-        return self.value
+        return self
 
-class Bool(Term):
+    def __str__(self):
+        str(self.value)
+
+class Bool(BaseBox):
     def __init__(self, value):
         self.value = value
 
-    def __str__(self):
-        return str(self.value)
-
     def eval(self):
-        return self.value
-
-class Tuple(Term):
-    def __init__(self, first, second):
-        self.value = (first, second)
+        return self
 
     def __str__(self):
-        return str(self.value)
+        str(self.value)
+
+class Tuple(BaseBox):
+    def __init__(self, value):
+        self.value = value
 
     def eval(self):
-        return self.value
+        return self
+
+    def __str__(self):
+        str(self.value)
 
 # User defined functions
 
-class Function(Term):
+class Function(BaseBox):
     def __init__(self, params, expr):
         self.params = params
         self.expr = expr
@@ -66,7 +59,7 @@ class Function(Term):
     def invoke(self, args):
         pass
 
-class Call(Term):
+class Call(BaseBox):
     def __init__(self, callee, args):
         self.callee = callee
         self.args = args
@@ -79,7 +72,7 @@ class Call(Term):
 
 ## Intrinsic functions
 
-class Print(Term):
+class Print(BaseBox):
     def __init__(self, expr):
         self.expr = expr
 
@@ -88,14 +81,14 @@ class Print(Term):
         print(value)
         return value
 
-class First(Term):
+class First(BaseBox):
     def __init__(self, tuple):
         self.tuple = tuple
 
     def eval(self):
         return tuple[0]
 
-class Second(Term):
+class Second(BaseBox):
     def __init__(self, tuple):
         self.tuple = tuple
 
@@ -104,7 +97,7 @@ class Second(Term):
 
 ### Binary operators
 
-class Binary(Token):
+class Binary(BaseBox):
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -163,7 +156,7 @@ class Or(Binary):
 
 ### Flow control
 
-class Let(Term):
+class Let(BaseBox):
     def __init__(self, expr, args):
         self.callee = callee
         self.args = args
@@ -174,7 +167,7 @@ class Let(Term):
     def eval():
         pass
 
-class If(Term):
+class If(BaseBox):
     def __init__(self, condition, then, otherwise):
         self.condition = condition
         self.then = then
