@@ -24,8 +24,5 @@ COPY . /app
 # Compile the interpreter
 RUN make rinha
 
-# Copy Rinha source
-COPY src/rinha /var/rinha
-
 # Interpret rinha code
 ENTRYPOINT ["./rinha", "/var/rinha/source.rinha"]

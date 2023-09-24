@@ -32,4 +32,4 @@ README.md
 .pytest_cache
 .vscode
 pypy
-bin
+rinha
