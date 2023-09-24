@@ -28,7 +28,7 @@ rinha: toolchain reqs
 	python pypy/rpython/bin/rpython --output bin/rinha --verbose -O2 src/python/target.py
 
 test:
-	pytest src/python/
+	pytest -sxW ignore src/python/
 
 docker-test: image
 	docker run --rm diegor2/rinha pytest src/python/

@@ -301,9 +301,7 @@ def test_reserved_words():
     with raises(StopIteration):
         stream.next()
 
-
-
-def test_reserved_words():
+def test_operators():
     stream = lexer.lex('&&||==!=<=>=<> =>(){}+-*/%,;=')
 
     token = stream.next()
@@ -389,6 +387,339 @@ def test_reserved_words():
     token = stream.next()
     assert token.name == 'ASSIGN'
     assert token.value == '='
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_digits():
+    stream = lexer.lex('123456')
+
+    token = stream.next()
+    assert token.name == 'DIGITS'
+    assert token.value == '123456'
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_positive_integer():
+    stream = lexer.lex('+123456')
+
+    token = stream.next()
+    assert token.name == 'PLUS'
+    assert token.value == '+'
+
+    token = stream.next()
+    assert token.name == 'DIGITS'
+    assert token.value == '123456'
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_negative_integer():
+    stream = lexer.lex('-123456')
+
+    token = stream.next()
+    assert token.name == 'MINUS'
+    assert token.value == '-'
+
+    token = stream.next()
+    assert token.name == 'DIGITS'
+    assert token.value == '123456'
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_let_declaration_number():
+    stream = lexer.lex('let x = 3;')
+
+    token = stream.next()
+    assert token.name == 'LET'
+    assert token.value == 'let'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'x'
+
+    token = stream.next()
+    assert token.name == 'ASSIGN'
+    assert token.value == '='
+
+    token = stream.next()
+    assert token.name == 'DIGITS'
+    assert token.value == '3'
+
+    token = stream.next()
+    assert token.name == 'SEMI_COLON'
+    assert token.value == ';'
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_let_declaration_string():
+    stream = lexer.lex('let hello = "world";')
+
+    token = stream.next()
+    assert token.name == 'LET'
+    assert token.value == 'let'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'hello'
+
+    token = stream.next()
+    assert token.name == 'ASSIGN'
+    assert token.value == '='
+
+    token = stream.next()
+    assert token.name == 'STRING'
+    assert token.value == '"world"'
+
+    token = stream.next()
+    assert token.name == 'SEMI_COLON'
+    assert token.value == ';'
+
+    with raises(StopIteration):
+        stream.next()
+
+def test_let_declaration_if_boolean():
+    code = '''let triangle = 
+                if (side_a == side_b && side_b == side_c) { 
+                    print("equilateral")
+                } else {
+                    if (
+                        side_a == side_b || 
+                        side_b == side_c || 
+                        side_c == side_a
+                    ) {
+                        print("isoceles")
+                    } else {
+                        print("scalene")
+                    }
+                } ; // TODO: check for right triangle :D
+                    print(triangle)
+                }
+            '''
+    stream = lexer.lex(code)
+
+    token = stream.next()
+    assert token.name == 'LET'
+    assert token.value == 'let'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'triangle'
+
+    token = stream.next()
+    assert token.name == 'ASSIGN'
+    assert token.value == '='
+
+    token = stream.next()
+    assert token.name == 'IF'
+    assert token.value == 'if'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_a'
+
+    token = stream.next()
+    assert token.name == 'EQ'
+    assert token.value == '=='
+    
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_b'
+
+    token = stream.next()
+    assert token.name == 'AND'
+    assert token.value == '&&'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_b'
+
+    token = stream.next()
+    assert token.name == 'EQ'
+    assert token.value == '=='
+    
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_c'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'OPEN_BRACES'
+    assert token.value == '{'
+
+    token = stream.next()
+    assert token.name == 'PRINT'
+    assert token.value == 'print'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'STRING'
+    assert token.value == '"equilateral"'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_BRACES'
+    assert token.value == '}'
+
+    token = stream.next()
+    assert token.name == 'ELSE'
+    assert token.value == 'else'    
+
+    token = stream.next()
+    assert token.name == 'OPEN_BRACES'
+    assert token.value == '{'
+    
+    token = stream.next()
+    assert token.name == 'IF'
+    assert token.value == 'if'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_a'
+
+    token = stream.next()
+    assert token.name == 'EQ'
+    assert token.value == '=='
+    
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_b'
+
+    token = stream.next()
+    assert token.name == 'OR'
+    assert token.value == '||'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_b'
+
+    token = stream.next()
+    assert token.name == 'EQ'
+    assert token.value == '=='
+    
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_c'
+
+    token = stream.next()
+    assert token.name == 'OR'
+    assert token.value == '||'
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_c'
+
+    token = stream.next()
+    assert token.name == 'EQ'
+    assert token.value == '=='
+    
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'side_a'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'OPEN_BRACES'
+    assert token.value == '{'
+
+    token = stream.next()
+    assert token.name == 'PRINT'
+    assert token.value == 'print'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'STRING'
+    assert token.value == '"isoceles"'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_BRACES'
+    assert token.value == '}'
+
+    token = stream.next()
+    assert token.name == 'ELSE'
+    assert token.value == 'else'    
+
+    token = stream.next()
+    assert token.name == 'OPEN_BRACES'
+    assert token.value == '{'
+
+    token = stream.next()
+    assert token.name == 'PRINT'
+    assert token.value == 'print'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'STRING'
+    assert token.value == '"scalene"'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_BRACES'
+    assert token.value == '}'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_BRACES'
+    assert token.value == '}'
+
+    token = stream.next()
+    assert token.name == 'SEMI_COLON'
+    assert token.value == ';'
+
+    token = stream.next()
+    assert token.name == 'PRINT'
+    assert token.value == 'print'
+
+    token = stream.next()
+    assert token.name == 'OPEN_PARENS'
+    assert token.value == '('
+
+    token = stream.next()
+    assert token.name == 'IDENTIFIER'
+    assert token.value == 'triangle'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_PARENS'
+    assert token.value == ')'
+
+    token = stream.next()
+    assert token.name == 'CLOSE_BRACES'
+    assert token.value == '}'
 
     with raises(StopIteration):
         stream.next()

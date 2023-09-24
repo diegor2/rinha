@@ -7,7 +7,7 @@ __ignore = [
     r'//.*[\n\r]+',             # single-line // comments
 ]
 
-__ignore_with_params = [
+__ignore_with_flags = [
     (r'/\*.*\*/', re.DOTALL)    # multiline /* comments */
 ]
 
@@ -49,8 +49,8 @@ __lexicon_operators = [
 ]
 
 __lexicon_regex = [
-    ("STRING",           r'"(\\\\|\\"|\\\w|[^"\\\n])*"'),
-    ('INT'              , r'\d+'),
+    ('STRING'           , r'"(\\\\|\\"|\\\w|[^"\\\n])*"'),
+    ('DIGITS'           , r'\d+'),
     ('IDENTIFIER'       , r'[\w_$][\w\d_$]*'),
 ]
 
@@ -67,7 +67,7 @@ lg = LexerGenerator()
 for regex in __ignore:
     lg.ignore(regex)
 
-for regex, params in __ignore_with_params:
+for regex, params in __ignore_with_flags:
     lg.ignore(regex, params)
 
 for token, constant in __lexicon_keywords:
