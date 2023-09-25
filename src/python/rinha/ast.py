@@ -144,7 +144,7 @@ class Rem(Binary):
         if isinstance(left, Int) and isinstance(right, Int):
             return Int(fmod(left.value, right.value))
         else:
-            raise ValueError("Can't compute: %s \% %s" % (type(left), type(right)))
+            raise ValueError("Can't compute: %s %% %s" % (type(left), type(right)))
 
 class Eq(Binary):
     def compute(self, left, right):

@@ -98,3 +98,23 @@ def test_sum():
     assert expr.left.value == 123
     assert expr.right.value == 456
     assert result.value == 579
+
+def test_print_sum(capfd):
+    tokens = iter([
+        Token('PRINT', 'print'),
+        Token('OPEN_PARENS', '('),
+        Token('DIGITS', '123'),
+        Token('PLUS', '+'),
+        Token('DIGITS', '456'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval()
+    
+    assert isinstance(result, ast.Int)
+    assert result.value == 579
+
+    out, err = capfd.readouterr()
+    assert out == '579\n'
+    assert err == ''
