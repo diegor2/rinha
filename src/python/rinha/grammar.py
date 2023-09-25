@@ -38,9 +38,13 @@ def bool_literal(tokens):
 
 ## Reference
 
-@pg.production('term : IDENTIFIER')
-def term_ident(tokens):
-    return ast.Identifier(tokens[0].getstr())
+@pg.production('term : reference')
+def term_identif(tokens):
+    return tokens[0]
+
+@pg.production('reference : IDENTIFIER')
+def identif_token(tokens):
+    return ast.Reference(tokens[0].getstr())
 
 ## Collections
 
@@ -132,7 +136,30 @@ def binary_sum(tokens):
     left, _, right = tokens
     return ast.Rem(left, right)
 
-# TODO: Call
+## Functions and Blocks
+
+@pg.production('term : LET IDENTIFIER ASSIGN term SEMI_COLON term')
+def term_let(tokens):
+    _, identif, _, expr, _, next = tokens
+    return ast.Let(identif.getstr(), expr, next)
+
+@pg.production('term : OPEN_BRACES term CLOSE_BRACES')
+def term_braces(tokens):
+    return tokens[1]
+
+@pg.production('params : term')
+def list_params(tokens):
+    return ast.ParamList([tokens[0]])
+
+@pg.production('params : params COMMA term')
+def list_params(tokens):
+    params, _, term = tokens
+    assert isinstance(params, ast.ParamList)
+    return params.append(term)
+
+@pg.production('term : FN OPEN_PARENS params CLOSE_PARENS FN_ARROW ')
+def term_function(tokens):
+    return ast.Print(tokens[2])
 
 ## Print
 

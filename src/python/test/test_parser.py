@@ -204,3 +204,33 @@ def test_second_reference():
     assert isinstance(result, ast.Str)
     assert result.value == 'y'
 
+def test_let(capfd):
+    scope = {}
+    
+    tokens = iter([
+        Token('LET', 'let'),
+        Token('IDENTIFIER', 'x'),
+        Token('ASSIGN', '='),
+        Token('DIGITS', '123'),
+        Token('SEMI_COLON', ';'),
+        Token('PRINT', 'print'),
+        Token('OPEN_PARENS', '('),
+        Token('IDENTIFIER', 'x'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    assert isinstance(expr, ast.Let)
+    assert isinstance(expr.expr, ast.Int)
+    
+    assert expr.identif == 'x'
+    assert expr.expr.value == 123
+
+    result = expr.eval(scope)
+    assert isinstance(result, ast.Int)
+    assert result.value == 123
+
+    out, err = capfd.readouterr()
+    assert out == '123\n'
+    assert err == ''
+

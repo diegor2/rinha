@@ -29,16 +29,12 @@ class Bool(Term):
     def eval(self, scope):
         return self
     
-class Identifier(Term):
-    def __init__(self, value):
-        self.value = value
+class Reference(Term):
+    def __init__(self, identif):
+        self.identif = identif
 
     def eval(self, scope):
-        return scope[self.value]
-    
-class Nil(Term):
-    def eval(self, scope):
-        raise ValueError('nil reference')
+        return scope[self.identif]
 
 ## Collections
 
@@ -51,20 +47,20 @@ class Tuple(Term):
         return self
 
 class First(Term):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, ref):
+        self.ref = ref
 
     def eval(self, scope):
-        target = self.value.eval(scope)
+        target = self.ref.eval(scope)
         assert isinstance(target, Tuple)
         return target.left
 
 class Second(Term):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, ref):
+        self.ref = ref
 
     def eval(self, scope):
-        target = self.value.eval(scope)
+        target = self.ref.eval(scope)
         assert isinstance(target, Tuple)
         return target.right
     
@@ -212,18 +208,38 @@ class Call(Term):
     def eval(self, scope):
         return self.callee.apply(self.args)
 
-## Flow control
+## Naming things
+## TODO: break down global scope
 
-class Let(Term):
-    def __init__(self, expr, args):
-        self.callee = callee
-        self.args = args
-
-    def to_string(self):
-        pass
+class Reference(Term):
+    def __init__(self, identif):
+        self.identif = identif
 
     def eval(self, scope):
-        pass
+        return scope[self.identif]
+
+class Let(Term):
+    def __init__(self, identif, expr, next):
+        self.identif = identif
+        self.expr = expr
+        self.next = next
+
+    def eval(self, scope):
+        scope[self.identif] = self.expr 
+        return self.next.eval(scope)
+
+class ParamList(BaseBox):
+    def __init__(self, params):
+        self.params = params
+    
+    def append(self, param):
+        return ParamList(self.params + [param])
+
+class ArgList(BaseBox):
+    def __init__(self, *params):
+        self.params = params
+
+## Flow control
 
 class If(Term):
     def __init__(self, condition, then, otherwise):
