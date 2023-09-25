@@ -1,32 +1,11 @@
 from math import fmod
 from rply.token import BaseBox
-from rply.token import Token
 
-""" 
-Term ABC
-
-This base class allows polymorphic nodes
-without breaking RPython static typing.
-
-It also`deal with RPython not complying
-with str() and repr() builtin protocols.
-
-"""
+ 
+## Term ABC
 class Term(BaseBox):
     def eval(self):
-        raise NotImplementedError
-
-    def __str__(self):
-        return self.to_string()
-    
-    def __repr__(self):
-        return self.to_debug_string()
-
-    def to_string(self):
-        raise NotImplementedError
-
-    def to_debug_string(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 ## Literal values
 class Int(Term):
@@ -36,12 +15,6 @@ class Int(Term):
     def eval(self):
         return self
 
-    def to_string(self):
-        return "%d" % self.value
-    
-    def to_debug_string(self):
-        return 'rinha.ast.Int(%s)'% str(self)
-
 class Str(Term):
     def __init__(self, value):
         self.value = value
@@ -49,12 +22,6 @@ class Str(Term):
     def eval(self):
         return self
 
-    def to_string(self):
-        return self.value
-
-    def to_debug_string(self):
-        return 'rinha.ast.Str(%s)'% self.value
-    
 class Bool(Term):
     def __init__(self, value):
         self.value = value
@@ -62,12 +29,8 @@ class Bool(Term):
     def eval(self):
         return self
 
-    def to_string(self):
-        return 'true' if self.value else 'false'
+## Collections
 
-    def to_debug_string(self):
-        return 'rinha.ast.Bool(%s)'% str(self)
-    
 class Tuple(Term):
     def __init__(self, value):
         self.value = value
@@ -75,41 +38,32 @@ class Tuple(Term):
     def eval(self):
         return self
 
-    def to_string(self):
-        return '(%s, %s)' % (
-            self.value[0].eval(), 
-            self.value[1].eval()
-        )
-
-    def to_debug_string(self):
-        return 'rinha.ast.Tuple(%s)'% str(self)
-    
 # User defined functions
 
-class Function(Term):
-    def __init__(self, params, expr):
-        self.params = params
-        self.expr = expr
+# class Function(Term):
+#     def __init__(self, params, expr):
+#         self.params = params
+#         self.expr = expr
 
-    def to_string(self):
-        return "fn ({}) => {}".format(_join(self.params), self.expr)
+#     def to_string(self):
+#         return "fn ({}) => {}".format(_join(self.params), self.expr)
 
-    def eval(self):
-        return self.value
+#     def eval(self):
+#         return self.value
 
-    def invoke(self, args):
-        pass
+#     def invoke(self, args):
+#         pass
 
-class Call(Term):
-    def __init__(self, callee, args):
-        self.callee = callee
-        self.args = args
+# class Call(Term):
+#     def __init__(self, callee, args):
+#         self.callee = callee
+#         self.args = args
 
-    def to_string(self):
-        return "Call {} with args: {}".format(self.callee, _join(self.args))
+#     def to_string(self):
+#         return "Call {} with args: {}".format(self.callee, _join(self.args))
 
-    def eval(self):
-        return self.callee.invoke(self.args)
+#     def eval(self):
+#         return self.callee.invoke(self.args)
 
 ## Intrinsic functions
 
@@ -118,23 +72,31 @@ class Print(Term):
         self.expr = expr
 
     def eval(self):
-        term = self.expr.eval()
-        print(term.to_string())
-        return term
+        box = self.expr.eval()
 
-class First(Term):
-    def __init__(self, tuple):
-        self.tuple = tuple
+        if isinstance(box, Str):
+            print(box.value)
+        elif isinstance(box, Int):
+            print(box.value)
+        elif isinstance(box, Bool):
+            print('true' if box.value else 'false')
+        else:
+            raise ValueError("Can't print this! %s" % type(box))
+        return box
 
-    def eval(self):
-        return tuple[0]
+# class First(Term):
+#     def __init__(self, tuple):
+#         self.tuple = tuple
 
-class Second(Term):
-    def __init__(self, tuple):
-        self.tuple = tuple
+#     def eval(self):
+#         return tuple[0]
 
-    def eval(self):
-        return tuple[1]
+# class Second(Term):
+#     def __init__(self, tuple):
+#         self.tuple = tuple
+
+#     def eval(self):
+#         return tuple[1]
 
 ### Binary operators
 
@@ -143,82 +105,127 @@ class Binary(Term):
         self.left = left
         self.right = right
 
-class Add(Binary):
     def eval(self):
-        return self.left.eval() + self.right.eval()
+        return self.compute(self.left.eval(), self.right.eval())
+    
+    def compute(self, left, right):
+        raise NotImplementedError()
+
+class Add(Binary):
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Int(left.value + right.value)
+        else:
+            raise ValueError("Can't compute: %s + %s" % (type(left), type(right)))
 
 class Sub(Binary):
-    def eval(self):
-        return self.left.eval() - self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Int(left.value - right.value)
+        else:
+            raise ValueError("Can't compute: %s - %s" % (type(left), type(right)))
 
 class Mul(Binary):
-    def eval(self):
-        return self.left.eval() * self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Int(left.value * right.value)
+        else:
+            raise ValueError("Can't compute: %s * %s" % (type(left), type(right)))
 
 class Div(Binary):
-    def eval(self):
-        return self.left.eval() / self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Int(left.value / right.value)
+        else:
+            raise ValueError("Can't compute: %s / %s" % (type(left), type(right)))
 
 class Rem(Binary):
-    def eval(self):
-        return fmod(self.left.eval(), self.right.eval())
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Int(fmod(left.value, right.value))
+        else:
+            raise ValueError("Can't compute: %s \% %s" % (type(left), type(right)))
 
 class Eq(Binary):
-    def eval(self):
-        return self.left.eval() == self.right.eval()
-    
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value == right.value)
+        else:
+            raise ValueError("Can't compare: %s == %s" % (type(left), type(right)))
+
 class Neq(Binary):
-    def eval(self):
-        return self.left.eval() != self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value != right.value)
+        else:
+            raise ValueError("Can't compare: %s == %s" % (type(left), type(right)))
 
 class Lt(Binary):
-    def eval(self):
-        return self.left.eval() < self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value < right.value)
+        else:
+            raise ValueError("Can't compare: %s , %s" % (type(left), type(right)))
 
 class Gt(Binary):
-    def eval(self):
-        return self.left.eval() > self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value > right.value)
+        else:
+            raise ValueError("Can't compare: %s > %s" % (type(left), type(right)))
 
 class Lte(Binary):
-    def eval(self):
-        return self.left.eval() <= self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value <= right.value)
+        else:
+            raise ValueError("Can't compare: %s <= %s" % (type(left), type(right)))
 
 class Gte(Binary):
-    def eval(self):
-        return self.left.eval() >= self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value >= right.value)
+        else:
+            raise ValueError("Can't compare: %s >= %s" % (type(left), type(right)))
 
 class And(Binary):
-    def eval(self):
-        return self.left.eval() and self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value and right.value)
+        else:
+            raise ValueError("Can't compare: %s && %s" % (type(left), type(right)))
 
 class Or(Binary):
-    def eval(self):
-        return self.left.eval() or self.right.eval()
+    def compute(self, left, right):
+        if isinstance(left, Int) and isinstance(right, Int):
+            return Bool(left.value or right.value)
+        else:
+            raise ValueError("Can't compare: %s || %s" % (type(left), type(right)))
 
 ### Flow control
 
-class Let(Term):
-    def __init__(self, expr, args):
-        self.callee = callee
-        self.args = args
+# class Let(Term):
+#     def __init__(self, expr, args):
+#         self.callee = callee
+#         self.args = args
 
-    def to_string(self):
-        pass
+#     def to_string(self):
+#         pass
 
-    def eval():
-        pass
+#     def eval():
+#         pass
 
-class If(Term):
-    def __init__(self, condition, then, otherwise):
-        self.condition = condition
-        self.then = then
-        self.otherwise = otherwise
+# class If(Term):
+#     def __init__(self, condition, then, otherwise):
+#         self.condition = condition
+#         self.then = then
+#         self.otherwise = otherwise
 
-    def to_string(self):
-        pass
+#     def to_string(self):
+#         pass
 
-    def eval():
-        pass
+#     def eval():
+#         pass
 
 ### Helper functions
 

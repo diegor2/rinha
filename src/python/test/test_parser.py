@@ -1,30 +1,27 @@
 from rinha import ast
-from rinha.parsing import parser
+from rinha.grammar import parser
 from rply.token import Token
 
 def test_string():
-    tokens = iter([Token('STRING', 'Lorem ipsum')])
+    tokens = iter([Token('STRING', '"Lorem ipsum"')])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
     
     assert isinstance(expr, ast.Str)
-    assert isinstance(result, ast.Str)
-    assert result.value == 'Lorem ipsum'
+    assert expr.value == 'Lorem ipsum'
 
 
 def test_print_string(capfd):
     tokens = iter([
         Token('PRINT', 'print'),
         Token('OPEN_PARENS', '('),
-        Token('STRING', 'Lorem ipsum'),
+        Token('STRING', '"Lorem ipsum"'),
         Token('CLOSE_PARENS', ')'),
     ])
 
     expr = parser.parse(tokens)
-    assert isinstance(expr, ast.Print)
-
     result = expr.eval()
+
     assert isinstance(result, ast.Str)
     assert result.value == 'Lorem ipsum'
 
@@ -45,8 +42,59 @@ def test_print_number(capfd):
     result = expr.eval()
     out, err = capfd.readouterr()
 
-    assert isinstance(expr, ast.Print)
-    assert isinstance(expr.expr, ast.Int)
+    assert isinstance(result, ast.Int)
     assert result.value == 123
     assert out == '123\n'
     assert err == ''
+
+def test_print_boolean_true(capfd):
+    tokens = iter([
+        Token('PRINT', 'print'),
+        Token('OPEN_PARENS', '('),
+        Token('TRUE', 'true'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval()
+    out, err = capfd.readouterr()
+
+    assert isinstance(result, ast.Bool)
+    assert result.value == True
+    assert out == 'true\n'
+    assert err == ''
+
+def test_print_boolean_false(capfd):
+    tokens = iter([
+        Token('PRINT', 'print'),
+        Token('OPEN_PARENS', '('),
+        Token('FALSE', 'false'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval()
+    out, err = capfd.readouterr()
+
+    assert isinstance(result, ast.Bool)
+    assert result.value == False
+    assert out == 'false\n'
+    assert err == ''
+
+def test_sum():
+    tokens = iter([
+        Token('DIGITS', '123'),
+        Token('PLUS', '+'),
+        Token('DIGITS', '456'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval()
+    
+    assert isinstance(expr.left, ast.Int)
+    assert isinstance(expr.right, ast.Int)
+    assert isinstance(result, ast.Int)
+    
+    assert expr.left.value == 123
+    assert expr.right.value == 456
+    assert result.value == 579
