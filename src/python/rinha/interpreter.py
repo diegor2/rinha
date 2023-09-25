@@ -1,8 +1,9 @@
 from rinha.lexical import lexer
 from rinha.grammar import parser
-from rinha.parser_state import ParserState
+from rinha.ast import Nil
 
 def interpret(filename, source):
+    global_scope = {'' : Nil()}
     stream = lexer.lex(source)
-    ast = parser.parse(stream, state = ParserState(filename))
-    ast.eval()
+    ast = parser.parse(stream)
+    ast.eval(global_scope)

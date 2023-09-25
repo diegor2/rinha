@@ -4,7 +4,7 @@ from rply.token import BaseBox
  
 ## Term ABC
 class Term(BaseBox):
-    def eval(self):
+    def eval(self, scope):
         raise NotImplementedError()
 
 ## Literal values
@@ -12,22 +12,33 @@ class Int(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
+    def eval(self, scope):
         return self
 
 class Str(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
+    def eval(self, scope):
         return self
 
 class Bool(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
+    def eval(self, scope):
         return self
+    
+class Identifier(Term):
+    def __init__(self, value):
+        self.value = value
+
+    def eval(self, scope):
+        return scope[self.value]
+    
+class Nil(Term):
+    def eval(self, scope):
+        raise ValueError('nil reference')
 
 ## Collections
 
@@ -36,58 +47,35 @@ class Tuple(Term):
         self.left = left
         self.right = right
 
-    def eval(self):
+    def eval(self, scope):
         return self
 
 class First(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
-        return self.value.left
+    def eval(self, scope):
+        target = self.value.eval(scope)
+        assert isinstance(target, Tuple)
+        return target.left
 
 class Second(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self):
-        return self.value.right
-
-# User defined functions
-
-# class Function(Term):
-#     def __init__(self, params, expr):
-#         self.params = params
-#         self.expr = expr
-
-#     def to_string(self):
-#         return "fn ({}) => {}".format(_join(self.params), self.expr)
-
-#     def eval(self):
-#         return self.value
-
-#     def invoke(self, args):
-#         pass
-
-# class Call(Term):
-#     def __init__(self, callee, args):
-#         self.callee = callee
-#         self.args = args
-
-#     def to_string(self):
-#         return "Call {} with args: {}".format(self.callee, _join(self.args))
-
-#     def eval(self):
-#         return self.callee.invoke(self.args)
-
+    def eval(self, scope):
+        target = self.value.eval(scope)
+        assert isinstance(target, Tuple)
+        return target.right
+    
 ## Intrinsic functions
 
 class Print(Term):
     def __init__(self, expr):
         self.expr = expr
 
-    def eval(self):
-        box = self.expr.eval()
+    def eval(self, scope):
+        box = self.expr.eval(scope)
 
         if isinstance(box, Str):
             print(box.value)
@@ -106,8 +94,8 @@ class Binary(Term):
         self.left = left
         self.right = right
 
-    def eval(self):
-        return self.compute(self.left.eval(), self.right.eval())
+    def eval(self, scope):
+        return self.compute(self.left.eval(scope), self.right.eval(scope))
     
     def compute(self, left, right):
         raise NotImplementedError()
@@ -203,30 +191,48 @@ class Or(Binary):
         else:
             raise ValueError("Can't compare: %s || %s" % (type(left), type(right)))
 
-### Flow control
+# User defined functions
 
-# class Let(Term):
-#     def __init__(self, expr, args):
-#         self.callee = callee
-#         self.args = args
+class Function(Term):
+    def __init__(self, params, body):
+        self.params = params
+        self.body = body
 
-#     def to_string(self):
-#         pass
+    def eval(self, scope):
+        return self
 
-#     def eval():
-#         pass
+    def apply(self, args):
+        return self
 
-# class If(Term):
-#     def __init__(self, condition, then, otherwise):
-#         self.condition = condition
-#         self.then = then
-#         self.otherwise = otherwise
+class Call(Term):
+    def __init__(self, callee, args):
+        self.callee = callee
+        self.args = args
 
-#     def to_string(self):
-#         pass
+    def eval(self, scope):
+        return self.callee.apply(self.args)
 
-#     def eval():
-#         pass
+## Flow control
+
+class Let(Term):
+    def __init__(self, expr, args):
+        self.callee = callee
+        self.args = args
+
+    def to_string(self):
+        pass
+
+    def eval(self, scope):
+        pass
+
+class If(Term):
+    def __init__(self, condition, then, otherwise):
+        self.condition = condition
+        self.then = then
+        self.otherwise = otherwise
+
+    def eval(self, scope):
+        pass
 
 ### Helper functions
 

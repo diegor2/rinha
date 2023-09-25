@@ -20,7 +20,7 @@ def test_print_string(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
 
     assert isinstance(result, ast.Str)
     assert result.value == 'Lorem ipsum'
@@ -39,7 +39,7 @@ def test_print_number(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
     out, err = capfd.readouterr()
 
     assert isinstance(result, ast.Int)
@@ -56,7 +56,7 @@ def test_print_boolean_true(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
     out, err = capfd.readouterr()
 
     assert isinstance(result, ast.Bool)
@@ -73,7 +73,7 @@ def test_print_boolean_false(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
     out, err = capfd.readouterr()
 
     assert isinstance(result, ast.Bool)
@@ -89,7 +89,7 @@ def test_sum():
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
     
     assert isinstance(expr.left, ast.Int)
     assert isinstance(expr.right, ast.Int)
@@ -110,7 +110,7 @@ def test_print_sum(capfd):
     ])
 
     expr = parser.parse(tokens)
-    result = expr.eval()
+    result = expr.eval(None)
     
     assert isinstance(result, ast.Int)
     assert result.value == 579
@@ -118,3 +118,89 @@ def test_print_sum(capfd):
     out, err = capfd.readouterr()
     assert out == '579\n'
     assert err == ''
+
+def test_tuple():
+    tokens = iter([
+        Token('OPEN_PARENS', '('),
+        Token('STRING', '"x"'),
+        Token('COMMA', ','),
+        Token('STRING', '"y"'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval(None)
+    
+    assert isinstance(result, ast.Tuple)
+    assert result.left.value == 'x'
+    assert result.right.value == 'y'
+
+def test_first_literal():
+    tokens = iter([
+        Token('FIRST', 'first'),
+        Token('OPEN_PARENS', '('),
+        Token('OPEN_PARENS', '('),
+        Token('STRING', '"x"'),
+        Token('COMMA', ','),
+        Token('STRING', '"y"'),
+        Token('CLOSE_PARENS', ')'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval(None)
+    
+    assert isinstance(result, ast.Str)
+    assert result.value == 'x'
+
+def test_second_literal():
+    tokens = iter([
+        Token('SECOND', 'second'),
+        Token('OPEN_PARENS', '('),
+        Token('OPEN_PARENS', '('),
+        Token('STRING', '"x"'),
+        Token('COMMA', ','),
+        Token('STRING', '"y"'),
+        Token('CLOSE_PARENS', ')'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval(None)
+    
+    assert isinstance(result, ast.Str)
+    assert result.value == 'y'
+
+
+def test_first_reference():
+    scope = {'pair' : ast.Tuple(ast.Str('x'), ast.Str('y'))}
+    
+    tokens = iter([
+        Token('FIRST', 'first'),
+        Token('OPEN_PARENS', '('),
+        Token('IDENTIFIER', 'pair'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval(scope)
+    
+    assert isinstance(result, ast.Str)
+    assert result.value == 'x'
+
+def test_second_reference():
+    scope = {'pair' : ast.Tuple(ast.Str('x'), ast.Str('y'))}
+    
+    tokens = iter([
+        Token('SECOND', 'second'),
+        Token('OPEN_PARENS', '('),
+        Token('IDENTIFIER', 'pair'),
+        Token('CLOSE_PARENS', ')'),
+    ])
+
+    expr = parser.parse(tokens)
+    result = expr.eval(scope)
+    
+    assert isinstance(result, ast.Str)
+    assert result.value == 'y'
+
