@@ -12,12 +12,12 @@ def main(argv):
     if not len(argv) == 2:
         print __doc__
         return 1
-    
-    f = open_file_as_stream(argv[1])
+    filename = argv[1]
+    f = open_file_as_stream(filename)
     source = f.readall()
     f.close()
 
-    interpret(source)
+    interpret(filename, source)
     return 0
 
 

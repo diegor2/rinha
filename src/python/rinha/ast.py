@@ -32,11 +32,26 @@ class Bool(Term):
 ## Collections
 
 class Tuple(Term):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def eval(self):
+        return self
+
+class First(Term):
     def __init__(self, value):
         self.value = value
 
     def eval(self):
-        return self
+        return self.value.left
+
+class Second(Term):
+    def __init__(self, value):
+        self.value = value
+
+    def eval(self):
+        return self.value.right
 
 # User defined functions
 
@@ -83,20 +98,6 @@ class Print(Term):
         else:
             raise ValueError("Can't print this! %s" % type(box))
         return box
-
-# class First(Term):
-#     def __init__(self, tuple):
-#         self.tuple = tuple
-
-#     def eval(self):
-#         return tuple[0]
-
-# class Second(Term):
-#     def __init__(self, tuple):
-#         self.tuple = tuple
-
-#     def eval(self):
-#         return tuple[1]
 
 ### Binary operators
 
