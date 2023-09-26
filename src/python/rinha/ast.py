@@ -127,7 +127,7 @@ class Print(Term):
 
         assert isinstance(box, Value)
         print(box.to_str())
-        # dump(box)
+
         return box
 
     def to_json(self):
@@ -144,13 +144,7 @@ class Binary(Term):
         lhs, rhs = self.left.eval(scope), self.right.eval(scope)
         assert isinstance(lhs, Value) and isinstance(rhs, Value)
 
-        # dump(self)
-        # dump(lhs)
-        # dump(rhs)
-
         result = self.compute(lhs, rhs)
-        dump((self.__class__.__name__, lhs, rhs, result))
-
         return boxed(result)
 
     def compute(self, left, right):
@@ -158,131 +152,91 @@ class Binary(Term):
     
 class Add(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value + right.value
-        # else:
-            # raise ValueError("Can't compute: %s + %s" % (type(left), type(right)))
+        return left.value + right.value
 
     def to_json(self):
         return {'Add': (self.left.to_json(), self.right.to_json())}
     
 class Sub(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value - right.value
-        # else:
-        #     raise ValueError("Can't compute: %s - %s" % (type(left), type(right)))
+        return left.value - right.value
 
     def to_json(self):
         return {'Sub': (self.left.to_json(), self.right.to_json())}
     
 class Mul(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value * right.value
-        # else:
-        #     raise ValueError("Can't compute: %s * %s" % (type(left), type(right)))
+        return left.value * right.value
 
     def to_json(self):
         return {'Mul': (self.left.to_json(), self.right.to_json())}
     
 class Div(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value / right.value
-        # else:
-        #     raise ValueError("Can't compute: %s / %s" % (type(left), type(right)))
+        return left.value / right.value
 
     def to_json(self):
         return {'Div': (self.left.to_json(), self.right.to_json())}
     
 class Rem(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return fmod(left.value, right.value)
-        # else:
-        #     raise ValueError("Can't compute: %s %% %s" % (type(left), type(right)))
+        return fmod(left.value, right.value)
 
     def to_json(self):
         return {'Rem': (self.left.to_json(), self.right.to_json())}
     
 class Eq(Binary):
     def compute(self, left, right):
-        # dump(self)
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value == right.value
-        # else:
-        #     raise ValueError("Can't compare: %s == %s" % (type(left), type(right)))
+        return left.value == right.value
 
     def to_json(self):
         return {'Eq': (self.left.to_json(), self.right.to_json())}
     
 class Neq(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value != right.value
-        # else:
-        #     raise ValueError("Can't compare: %s != %s" % (type(left), type(right)))
+        return left.value != right.value
 
     def to_json(self):
         return {'Neq': (self.left.to_json(), self.right.to_json())}
     
 class Lt(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value < right.value
-        # else:
-        #     raise ValueError("Can't compare: %s < %s" % (type(left), type(right)))
+        return left.value < right.value
 
     def to_json(self):
         return {'Lt': (self.left.to_json(), self.right.to_json())}
     
 class Gt(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value > right.value
-        # else:
-        #     raise ValueError("Can't compare: %s > %s" % (type(left), type(right)))
+        return left.value > right.value
 
     def to_json(self):
         return {'Gt': (self.left.to_json(), self.right.to_json())}
     
 class Lte(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value <= right.value
-        # else:
-        #     raise ValueError("Can't compare: %s <= %s" % (type(left), type(right)))
+        return left.value <= right.value
 
     def to_json(self):
         return {'Lte': (self.left.to_json(), self.right.to_json())}
     
 class Gte(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value >= right.value
-        # else:
-        #     raise ValueError("Can't compare: %s >= %s" % (type(left), type(right)))
+        return left.value >= right.value
 
     def to_json(self):
         return {'Gte': (self.left.to_json(), self.right.to_json())}
     
 class And(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Value) and isinstance(right, Value):
-            return left.value and right.value
-        # else:
-        #     raise ValueError("Can't compare: %s && %s" % (type(left), type(right)))
+        return left.value and right.value
 
     def to_json(self):
         return {'And': (self.left.to_json(), self.right.to_json())}
     
 class Or(Binary):
     def compute(self, left, right):
-        # if isinstance(left, Int) and isinstance(right, Int):
-            return left.value or right.value
-        # else:
-        #     raise ValueError("Can't compare: %s || %s" % (type(left), type(right)))
+        return left.value or right.value
 
     def to_json(self):
         return {'Or': (self.left.to_json(), self.right.to_json())}
@@ -325,8 +279,6 @@ class ArgList(BaseBox):
     
 class Call(Term):
     def __init__(self, callee, args):
-        # assert isinstance(callee, Reference)
-        # assert isinstance(args, ArgList)
         self.callee = callee
         self.args = args
 
@@ -343,15 +295,6 @@ class Call(Term):
         cloj.update(locals)
 
         result = fn.apply(cloj)
-
-        dump({
-            # 'body': fn.body,
-            'args': locals,
-            'result': result,
-        })
-        # dump((self.callee, scope['n'], result))
-        print('-' * 10)
-
         return result
         
     def to_json(self):
@@ -368,11 +311,6 @@ class Reference(Term):
 
     def eval(self, scope = None):
         expr = scope[self.identif]
-        # dump(expr)
-        # if(isinstance(expr, Value) or isinstance(expr, Function)):
-            # return expr
-        # else:
-        #     return expr.eval(scope)
         return expr.eval(scope)
     
     def to_json(self):
@@ -387,8 +325,6 @@ class Let(Term):
     def eval(self, scope = None):
         cloj = scope or dict()
         cloj[self.identif] = self.expr # late eval
-
-        # dump(('let', cloj))
 
         return self.next.eval(cloj)
 
@@ -406,13 +342,9 @@ class If(Term):
     def eval(self, scope = None):
         box = self.condition.eval(scope)
 
-        # dump((self.condition, scope['n']))
-
         if(box.is_truthy()):
-            # print('then')
             return self.then.eval(scope)
         else:
-            # print('else')
             return self.otherwise.eval(scope)
 
     def to_json(self):
