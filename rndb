@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+PYTHONPATH=pypy python -W ignore src/python/debug.py "$@"
