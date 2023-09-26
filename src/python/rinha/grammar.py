@@ -142,10 +142,6 @@ def term_let(tokens):
     _, identif, _, expr, _, next = tokens
     return ast.Let(identif.getstr(), expr, next)
 
-@pg.production('term : OPEN_BRACES term CLOSE_BRACES')
-def term_braces(tokens):
-    return tokens[1]
-
 @pg.production('params : ')
 def param_identif(tokens):
     return ast.ParamList()
@@ -163,7 +159,15 @@ def params_list(tokens):
 def term_function(tokens):
     return tokens[0]
 
-@pg.production('function : FN OPEN_PARENS params CLOSE_PARENS FN_ARROW term')
+@pg.production('body : OPEN_BRACES term CLOSE_BRACES')
+def term_braces(tokens):
+    return tokens[1]
+
+@pg.production('body : term')
+def term_braces(tokens):
+    return tokens[0]
+
+@pg.production('function : FN OPEN_PARENS params CLOSE_PARENS FN_ARROW body')
 def function_tokens(tokens):
     return ast.Function(tokens[2], tokens[5])
 
@@ -173,7 +177,7 @@ def param_identif(tokens):
 
 @pg.production('args : term')
 def param_identif(tokens):
-    return ast.ArgList(tokens[0].getstr())
+    return ast.ArgList(tokens[0])
 
 @pg.production('args : args COMMA args')
 def params_list(tokens):
@@ -189,6 +193,16 @@ def term_call(tokens):
 @pg.production('term : PRINT OPEN_PARENS term CLOSE_PARENS')
 def term_print(tokens):
     return ast.Print(tokens[2])
+
+## Flow control
+
+@pg.production(
+    'term : IF OPEN_PARENS term CLOSE_PARENS ' +
+    'OPEN_BRACES term CLOSE_BRACES ' +
+    'ELSE OPEN_BRACES term CLOSE_BRACES'
+)
+def term_if(tokens):
+    return ast.If(tokens[2], tokens[5], tokens[9])
 
 ## Error
 

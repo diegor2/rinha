@@ -4,7 +4,7 @@ from rply.token import BaseBox
  
 ## Term ABC
 class Term(BaseBox):
-    def eval(self, scope):
+    def eval(self, scope = None):
         raise NotImplementedError()
 
 ## Literal values
@@ -12,28 +12,28 @@ class Int(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self
 
 class Str(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self
 
 class Bool(Term):
     def __init__(self, value):
         self.value = value
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self
     
 class Reference(Term):
     def __init__(self, identif):
         self.identif = identif
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return scope[self.identif]
 
 ## Collections
@@ -43,14 +43,14 @@ class Tuple(Term):
         self.left = left
         self.right = right
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self
 
 class First(Term):
     def __init__(self, ref):
         self.ref = ref
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         target = self.ref.eval(scope)
         assert isinstance(target, Tuple)
         return target.left
@@ -59,7 +59,7 @@ class Second(Term):
     def __init__(self, ref):
         self.ref = ref
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         target = self.ref.eval(scope)
         assert isinstance(target, Tuple)
         return target.right
@@ -70,7 +70,7 @@ class Print(Term):
     def __init__(self, expr):
         self.expr = expr
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         box = self.expr.eval(scope)
 
         if isinstance(box, Str):
@@ -90,7 +90,7 @@ class Binary(Term):
         self.left = left
         self.right = right
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self.compute(self.left.eval(scope), self.right.eval(scope))
     
     def compute(self, left, right):
@@ -205,7 +205,7 @@ class Function(Term):
         self.params = params
         self.body = body
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return self
 
     def apply(self, scope):
@@ -227,15 +227,14 @@ class Call(Term):
         self.ref = callee
         self.args = args
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         fn = self.ref.eval(scope)
-
-        # assert isinstance(fn, Function)
-        # assert isinstance(fn.params, ParamList)
-        # assert len(fn.params.ids) == len(self.args)
-        # return fn.apply(scope + dict(zip(fn.params.ids, self.args)))
-
-        return fn.apply(scope)
+        assert isinstance(fn, Function)
+        assert len(fn.params.ids) == len(self.args.exprs)
+        
+        cloj = scope or dict()
+        cloj.update(zip(fn.params.ids, self.args.exprs))
+        return fn.apply(cloj)
 
 ## Naming things
 
@@ -243,7 +242,7 @@ class Reference(Term):
     def __init__(self, identif):
         self.identif = identif
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         return scope[self.identif]
 
 class Let(Term):
@@ -252,9 +251,10 @@ class Let(Term):
         self.expr = expr
         self.next = next
 
-    def eval(self, scope):
-        scope[self.identif] = self.expr 
-        return self.next.eval(scope)
+    def eval(self, scope = None):
+        cloj = scope or dict()
+        cloj[self.identif] = self.expr
+        return self.next.eval(cloj)
 
 ## Flow control
 
@@ -264,7 +264,7 @@ class If(Term):
         self.then = then
         self.otherwise = otherwise
 
-    def eval(self, scope):
+    def eval(self, scope = None):
         pass
 
 ### Helper functions
