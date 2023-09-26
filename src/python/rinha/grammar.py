@@ -4,7 +4,8 @@ from rinha.lexical import lexicon
 from rinha import ast
 
 pg = ParserGenerator(
-    tokens=lexicon
+    tokens = lexicon,
+    cache_id='rinha'
 )
 
 ## Optionals
@@ -48,19 +49,17 @@ def identif_token(tokens):
 
 ## Collections
 
-@pg.production('term : tuple')
+@pg.production('term : OPEN_PARENS term COMMA term CLOSE_PARENS')
 def term_tuple(tokens):
-    return tokens[0]
-
-@pg.production('tuple : OPEN_PARENS term COMMA term CLOSE_PARENS')
-def tuple_tokens(tokens):
     _, left, _, right, _ = tokens
     return ast.Tuple(left, right)
-    
+
+## TODO JOIN WITH FUNCTION
 @pg.production('term : FIRST OPEN_PARENS term CLOSE_PARENS')
 def term_first(tokens):
     return ast.First(tokens[2])
-    
+
+## TODO JOIN WITH FUNCTION
 @pg.production('term : SECOND OPEN_PARENS term CLOSE_PARENS')
 def term_second(tokens):
     return ast.Second(tokens[2])
@@ -147,30 +146,59 @@ def term_let(tokens):
 def term_braces(tokens):
     return tokens[1]
 
-@pg.production('params : term')
-def list_params(tokens):
-    return ast.ParamList([tokens[0]])
+@pg.production('params : ')
+def param_identif(tokens):
+    return ast.ParamList()
 
-@pg.production('params : params COMMA term')
-def list_params(tokens):
-    params, _, term = tokens
-    assert isinstance(params, ast.ParamList)
-    return params.append(term)
+@pg.production('params : IDENTIFIER')
+def param_identif(tokens):
+    return ast.ParamList(tokens[0].getstr())
 
-@pg.production('term : FN OPEN_PARENS params CLOSE_PARENS FN_ARROW ')
+@pg.production('params : params COMMA params')
+def params_list(tokens):
+    assert isinstance(tokens[0], ast.ParamList)
+    return tokens[0].merge(tokens[2])
+
+@pg.production('term : function')
 def term_function(tokens):
-    return ast.Print(tokens[2])
-
-## Print
-
-@pg.production('term : print')
-def term_print(tokens):
     return tokens[0]
 
-@pg.production('print : PRINT OPEN_PARENS term CLOSE_PARENS')
-def print_term_call(tokens):
+@pg.production('function : FN OPEN_PARENS params CLOSE_PARENS FN_ARROW term')
+def function_tokens(tokens):
+    return ast.Function(tokens[2], tokens[5])
+
+@pg.production('args : ')
+def param_identif(tokens):
+    return ast.ArgList()
+
+@pg.production('args : term')
+def param_identif(tokens):
+    return ast.ArgList(tokens[0].getstr())
+
+@pg.production('args : args COMMA args')
+def params_list(tokens):
+    assert isinstance(tokens[0], ast.ArgList)
+    return tokens[0].merge(tokens[2])
+
+@pg.production('term : reference OPEN_PARENS args CLOSE_PARENS')
+def term_call(tokens):
+    return ast.Call(tokens[0], tokens[2])
+
+## Print
+## TODO JOIN WITH FUNCTION
+@pg.production('term : PRINT OPEN_PARENS term CLOSE_PARENS')
+def term_print(tokens):
     return ast.Print(tokens[2])
 
 ## Error
+
+@pg.error
+def error_handler(token):
+    raise ValueError(
+        "Error on line %d token: %s" % (
+            token.getsourcepos().lineno,
+            token.gettokentype()
+        )
+    )
 
 parser = pg.build()

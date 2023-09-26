@@ -189,27 +189,55 @@ class Or(Binary):
 
 # User defined functions
 
+class ParamList(BaseBox):
+    def __init__(self, identif = None):
+        self.ids = [identif] if identif else []
+    
+    def merge(self, pl):
+        assert isinstance(pl, ParamList)
+        self.ids = self.ids + pl.ids
+        return self
+
 class Function(Term):
     def __init__(self, params, body):
+        assert isinstance(params, ParamList)
+        assert isinstance(body, Term)
         self.params = params
         self.body = body
 
     def eval(self, scope):
         return self
 
-    def apply(self, args):
+    def apply(self, scope):
+        return self.body.eval(scope)
+
+class ArgList(BaseBox):
+    def __init__(self, expr = None):
+        self.exprs = [expr] if expr else []
+
+    def merge(self, al):
+        assert isinstance(al, ArgList)
+        self.exprs = self.exprs + al.exprs
         return self
 
 class Call(Term):
     def __init__(self, callee, args):
-        self.callee = callee
+        # assert isinstance(callee, Reference)
+        # assert isinstance(args, ArgList)
+        self.ref = callee
         self.args = args
 
     def eval(self, scope):
-        return self.callee.apply(self.args)
+        fn = self.ref.eval(scope)
+
+        # assert isinstance(fn, Function)
+        # assert isinstance(fn.params, ParamList)
+        # assert len(fn.params.ids) == len(self.args)
+        # return fn.apply(scope + dict(zip(fn.params.ids, self.args)))
+
+        return fn.apply(scope)
 
 ## Naming things
-## TODO: break down global scope
 
 class Reference(Term):
     def __init__(self, identif):
@@ -227,17 +255,6 @@ class Let(Term):
     def eval(self, scope):
         scope[self.identif] = self.expr 
         return self.next.eval(scope)
-
-class ParamList(BaseBox):
-    def __init__(self, params):
-        self.params = params
-    
-    def append(self, param):
-        return ParamList(self.params + [param])
-
-class ArgList(BaseBox):
-    def __init__(self, *params):
-        self.params = params
 
 ## Flow control
 
