@@ -74,7 +74,7 @@ class Bool(Value):
         return {'bool': repr(self.value)}
 
     def to_str(self):
-        return str(self.value)
+        return 'true' if self.value else 'false'
     
     def is_truthy(self):
         return self.value
