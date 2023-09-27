@@ -1,15 +1,15 @@
 let triangle = fn (side_a, side_b, side_c) => {
     if ((side_a == side_b) && (side_b == side_c)) { 
-        print("equilateral")
+        "equilateral"
     } else {
         if (
             (side_a == side_b) || 
             (side_b == side_c) || 
             (side_c == side_a)
         ) {
-            print("isoceles")
+            "isoceles"
         } else {
-            print("scalene")
+            "scalene"
         } // TODO: check for right triangle :D
     } 
 }; let kind = triangle(3, 4, 5); print(kind)
