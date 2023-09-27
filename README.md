@@ -66,3 +66,12 @@ make rinha
 ```
 
 Todos os comandos no host exigem um ambiente com Python 2.7
+
+## Referencias
+- [RPython Experiments](https://github.com/dmlockhart/rpython-experiments)
+- [Pypy Source](https://foss.heptapod.net/pypy/pypy)
+- [RPython Docs](https://rpython.readthedocs.io/en/latest/index.html)
+- [Pypy Tutorial](https://www.pypy.org/posts/2011/04/tutorial-writing-interpreter-with-pypy-3785910476193156295.html)
+- [naulang](https://github.com/samgiles/naulang/tree/master)
+- [rply](https://rply.readthedocs.io/en/latest/users-guide/parsers.html#precedence-on-rules)
+- [lalrpop](http://lalrpop.github.io/lalrpop/tutorial/002_paren_numbers.html)
