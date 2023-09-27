@@ -1,4 +1,4 @@
-# Interpretador [rinha](https://github.com/aripiprazole/rinha-de-compiler) em [RPython](https://rpython.readthedocs.io/)
+# Interpretador [rinha](https://github.com/aripiprazole/rinha-de-compiler) em Python
 
 ## FAQ (Perguntas & Respostas)
 
@@ -8,7 +8,11 @@
 
 ### Mas isso não é um compilador!
 
-A rinha também aceita interpretadores. Meu objetivo inicial neste projeto era fazer um interpretador com compilador JIT para rinha.
+A rinha também aceita interpretadores. Meu objetivo inicial neste projeto era fazer um interpretador com compilador JIT em [RPython](https://rpython.readthedocs.io/).
+
+### Por que Python?
+
+A dificuldade de usar RPython foi bem maior do que esperado, já que não tinha nenhuma experiência com este framework. Como descobri a rinha há poucos dias do prazo final, tive que abrir mão de implementar o JIT. Como ainda haviam problemas com RPython, a versão final está usando o interpretador python comum.
 
 ### O que é RPython?
 
@@ -20,11 +24,9 @@ A rinha também aceita interpretadores. Meu objetivo inicial neste projeto era f
 É um interpretador JIT para Python, escrito em Python (ou mais especificamente, RPython).
 Isso faz com que o pypy seja tecnicamente uma versão [self-hosted](https://pt.wikipedia.org/wiki/Auto-hospedagem) do Python
 
-### Por que RPython?
+### Qual o status do projeto?
 
-Permite que o interpretador seja escrito em python e compilado para código nativo.
-RPython também permite criar interpretadores com JIT.
-Devido ao prazo, a implemetação atual do interpretador rinha não inclui JIT.
+O desenvolvimento da versão compilada continua no branch `rpython`. 
 
 ## Utilização
 
@@ -49,11 +51,6 @@ make container
 
 ```sh
 make test
-```
-
-### Para rodar o interpretador no host
-```sh
-./treta <arquivo.rinha>
 ```
 
 ### Para compilar o interpretador no host
