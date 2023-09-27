@@ -81,14 +81,17 @@ class Bool(Value):
     
 ## Collections
 
-class Tuple(Term):
+class Tuple(Value):
     def __init__(self, left, right):
-        self.left = left
-        self.right = right
+        self.left = left.eval()
+        self.right = right.eval()
 
     def eval(self, scope = None):
         return self
 
+    def to_str(self):
+        return str((self.left.value, self.right.value))
+    
     def to_json(self):
         return {'tup': (self.left.to_json(), self.right.to_json())}
 
@@ -152,7 +155,10 @@ class Binary(Term):
     
 class Add(Binary):
     def compute(self, left, right):
-        return left.value + right.value
+        if(isinstance(left, Str) or isinstance(right, Str)):
+            return str(left.value) + str(right.value)
+        else:
+            return left.value + right.value
 
     def to_json(self):
         return {'Add': (self.left.to_json(), self.right.to_json())}
@@ -173,14 +179,14 @@ class Mul(Binary):
     
 class Div(Binary):
     def compute(self, left, right):
-        return left.value / right.value
+        return left.value // right.value
 
     def to_json(self):
         return {'Div': (self.left.to_json(), self.right.to_json())}
     
 class Rem(Binary):
     def compute(self, left, right):
-        return fmod(left.value, right.value)
+        return int(fmod(left.value, right.value))
 
     def to_json(self):
         return {'Rem': (self.left.to_json(), self.right.to_json())}
@@ -324,7 +330,7 @@ class Let(Term):
 
     def eval(self, scope = None):
         cloj = scope or dict()
-        cloj[self.identif] = self.expr # late eval
+        cloj[self.identif] = self.expr.eval(scope)
 
         return self.next.eval(cloj)
 

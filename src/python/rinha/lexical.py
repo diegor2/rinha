@@ -12,7 +12,6 @@ __ignore_with_flags = [
 ]
 
 __lexicon_keywords = [
-    ('EXTERNAL'          , 'external'),
     ('TRUE'              , 'true'),
     ('FALSE'             , 'false'),
     ('PRINT'             , 'print'),

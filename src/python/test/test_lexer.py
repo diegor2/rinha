@@ -256,11 +256,7 @@ def test_function_call_with_spaces():
         stream.next()
 
 def test_reserved_words():
-    stream = lexer.lex('external true false print first second let if else fn')
-
-    token = stream.next()
-    assert token.name == 'EXTERNAL'
-    assert token.value == 'external'
+    stream = lexer.lex('true false print first second let if else fn')
 
     token = stream.next()
     assert token.name == 'TRUE'
