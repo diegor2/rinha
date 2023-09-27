@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-PYTHONPATH=pypy python -W ignore src/python/target.py "$@"
+PYTHONPATH=pypy python -W ignore src/python/entrypoint.py "$@"

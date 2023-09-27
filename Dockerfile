@@ -1,4 +1,4 @@
-FROM python:2.7-slim-stretch
+FROM pypy:slim-bullseye
 
 # Package dependencies
 # RUN apt update && apt install -y gcc make libffi-dev pkg-config \

@@ -12,7 +12,7 @@ A rinha também aceita interpretadores. Meu objetivo inicial neste projeto era f
 
 ### Por que Python?
 
-A dificuldade de usar RPython foi bem maior do que esperado, já que não tinha nenhuma experiência com este framework. Como descobri a rinha há poucos dias do prazo final, tive que abrir mão de implementar o JIT. Como ainda haviam problemas com RPython, a versão final está usando o interpretador python comum.
+A dificuldade de usar RPython foi bem maior do que esperado, já que não tinha nenhuma experiência com este framework. Como descobri a rinha há poucos dias do prazo final, tive que abrir mão de implementar o JIT. Como ainda haviam problemas com RPython, a versão final está usando o interpretador pypy.
 
 ### O que é RPython?
 
