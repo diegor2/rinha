@@ -1,0 +1,4 @@
+let execute = fn (func, n) => { func(n) };
+let square = fn (n) => { n * n };
+let result = execute(square, 4);  
+print(result)
